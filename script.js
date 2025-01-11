@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
         observer.observe(element);
     });
 
-    // Updated Animated text functionality
+    // Update the animated text functionality
     const titles = [
         "Full Stack Developer",
         "Tech Innovator",
@@ -70,38 +70,59 @@ document.addEventListener('DOMContentLoaded', () => {
         "Code Artist",
         "Digital Creator"
     ];
-    
+
     const animatedText = document.querySelector('.animated-text');
     let titleIndex = 0;
-    
+
     function updateTitle() {
-        // Add exit animation
-        animatedText.style.opacity = '0';
-        animatedText.style.transform = 'scale(0.95) translateY(10px)';
+        // Add changing class for glitch effect
+        animatedText.classList.add('changing');
         
-        setTimeout(() => {
-            animatedText.textContent = titles[titleIndex];
-            // Add entrance animation
-            animatedText.style.opacity = '1';
-            animatedText.style.transform = 'scale(1) translateY(0)';
-            
-            // Create glitch effect
-            setTimeout(() => {
-                animatedText.style.transform = 'scale(1.02) skew(-1deg)';
+        // Create glitch effect
+        const glitchDuration = 500; // 0.5 seconds
+        const glitchIntervals = 5;
+        let glitchCount = 0;
+        
+        const glitchInterval = setInterval(() => {
+            if (glitchCount < glitchIntervals) {
+                animatedText.style.transform = `translate(${Math.random() * 4 - 2}px, ${Math.random() * 4 - 2}px)`;
+                glitchCount++;
+            } else {
+                clearInterval(glitchInterval);
+                animatedText.style.transform = 'translate(0, 0)';
+                
+                // Update text after glitch effect
                 setTimeout(() => {
-                    animatedText.style.transform = 'scale(1) skew(0)';
+                    animatedText.textContent = titles[titleIndex];
+                    animatedText.classList.remove('changing');
+                    titleIndex = (titleIndex + 1) % titles.length;
                 }, 100);
-            }, 300);
-            
-            titleIndex = (titleIndex + 1) % titles.length;
-        }, 300);
+            }
+        }, glitchDuration / glitchIntervals);
     }
 
-    // Add transition styles
-    animatedText.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-    
     // Initial call
     updateTitle();
     // Update every 3 seconds
     setInterval(updateTitle, 3000);
+
+    // Add terminal-style typing effect
+    function typeText(element, text, speed = 50) {
+        let index = 0;
+        element.textContent = '';
+        
+        function type() {
+            if (index < text.length) {
+                element.textContent += text.charAt(index);
+                index++;
+                setTimeout(type, speed);
+            }
+        }
+        
+        type();
+    }
+
+    // Apply typing effect to initial text
+    const firstTitle = titles[0];
+    typeText(animatedText, firstTitle);
 }); 
